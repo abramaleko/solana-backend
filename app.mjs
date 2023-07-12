@@ -48,7 +48,7 @@ app.post('/api/merchant',async(request,response)=>{
     // Get the recent blockhash
     const recentBlockhash = await connection.getLatestBlockhash();
 
-    tr= SystemProgram.transfer({
+    const tr= SystemProgram.transfer({
       fromPubkey: sender,
       toPubkey: MERCHANT_WALLET,
       lamports: 1000000000, // 1sol =1,0000,000 lamports
