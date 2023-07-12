@@ -8,7 +8,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // API endpoints will be defined here
 
-const port = 3000; // choose any port you prefer
+//const port = 3000; // choose any port you prefer
 
 app.listen(port, () => {
   res.send("Express on Vercel");
