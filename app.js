@@ -18,7 +18,7 @@ app.listen(port, () => {
 app.get('/api/merchant', (req, res) => {
   
     const label = 'Abraham Maleko (The Developer)';
-    const icon = 'https://exiledapes.academy/wp-content/uploads/2021/09/X_share.png';
+    const icon = 'https://github.com/abramaleko/solana-backend/blob/main/icon.png?raw=true';
   
     res.status(200).json({
       label,
