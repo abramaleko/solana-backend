@@ -10,13 +10,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //const port = 3000; // choose any port you prefer
 
-app.listen(port, () => {
-  res.send("Express on Vercel");
-  console.log(`Server running on port ${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`Server running on port ${port}`);
+// });
 
 // GET endpoint
-app.get('/api/merchant-info', (req, res) => {
+app.get('/api/merchant', (req, res) => {
   
     const label = 'Abraham Maleko (The Developer)';
     const icon = 'https://exiledapes.academy/wp-content/uploads/2021/09/X_share.png';
