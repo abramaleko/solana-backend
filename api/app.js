@@ -28,4 +28,4 @@ app.get('/api/merchant-info', (req, res) => {
 });
 
 // Export the Express API
-module.exports = server;
+module.exports = app.js;
