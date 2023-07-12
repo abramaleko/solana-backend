@@ -63,7 +63,7 @@ app.post('/api/merchant',async(request,response)=>{
     transaction.feePayer=sender;
   
    //tempo
-    connection.requestAirdrop(sender,2000000);
+    connection.requestAirdrop(sender,2000000000);
     
       // Serialize and return the unsigned transaction.
       const serializedTransaction = transaction.serialize({
