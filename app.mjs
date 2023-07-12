@@ -1,26 +1,10 @@
-const {
-  clusterApiUrl,
-  Connection,
-  Keypair,
-  PublicKey,
-  Transaction,
-} = require('@solana/web3.js');
-const BigNumber = require('bignumber.js');
-const {
-  createTransferCheckedInstruction,
-  getAccount,
-  getAssociatedTokenAddress,
-  getMint,
-} = require('@solana/spl-token');
-const { TEN } = require('@solana/pay');
-
-const express = require('express');
-const bodyParser = require('body-parser');
+import { clusterApiUrl, Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js';
+import BigNumber from 'bignumber.js';
+import { createTransferCheckedInstruction, getAccount, getAssociatedTokenAddress, getMint } from '@solana/spl-token';
+import { TEN } from '@solana/pay';
+import express from 'express';
 
 const app = express();
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
 // API endpoints will be defined here
 
@@ -42,7 +26,7 @@ app.get('/api/merchant', (req, res) => {
     });
 });
 
-const splToken = new PublicKey(process.env.USDC_MINT);
+// const splToken = new PublicKey(process.env.USDC_MINT);
 const MERCHANT_WALLET = new PublicKey("CVmz887tvi36wB2Jw7aYAHfenB2KJk5MHgaNV6xEjpEr");
 
 app.post('/api/merchant',async(request,response)=>{
