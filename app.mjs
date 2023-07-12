@@ -27,6 +27,8 @@ app.get('/api/merchant', (req, res) => {
 });
 
 // const splToken = new PublicKey(process.env.USDC_MINT);
+const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
+console.log(clusterApiUrl('devnet'));
 const MERCHANT_WALLET = new PublicKey("CVmz887tvi36wB2Jw7aYAHfenB2KJk5MHgaNV6xEjpEr");
 
 app.post('/api/merchant',async(request,response)=>{
