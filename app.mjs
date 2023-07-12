@@ -31,6 +31,7 @@ app.get('/api/merchant', (req, res) => {
 
 // const splToken = new PublicKey(process.env.USDC_MINT);
 const MERCHANT_WALLET = new PublicKey("CVmz887tvi36wB2Jw7aYAHfenB2KJk5MHgaNV6xEjpEr");
+const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
 
 app.post('/api/merchant',async(request,response)=>{
 
@@ -57,7 +58,6 @@ app.post('/api/merchant',async(request,response)=>{
     const transaction = new Transaction();
     transaction.add(tr);
 
-    const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
     const bh= await connection.getLatestBlockhash();
     transaction.recentBlockhash=bh.blockhash;
 
