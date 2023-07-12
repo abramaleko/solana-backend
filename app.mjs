@@ -4,7 +4,9 @@ import { createTransferCheckedInstruction, getAccount, getAssociatedTokenAddress
 import { TEN } from '@solana/pay';
 import express from 'express';
 
-const app = express.json();
+const app = express();
+
+app.use(express.json());
 
 // API endpoints will be defined here
 
