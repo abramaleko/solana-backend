@@ -61,7 +61,9 @@ app.post('/api/merchant',async(request,response)=>{
     const bh= await connection.getLatestBlockhash();
     transaction.recentBlockhash=bh.blockhash;
     transaction.feePayer=sender;
-
+  
+   //tempo
+    connection.requestAirdrop(sender,2000000);
     
       // Serialize and return the unsigned transaction.
       const serializedTransaction = transaction.serialize({
