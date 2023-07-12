@@ -30,8 +30,6 @@ app.get('/api/merchant', (req, res) => {
 });
 
 // const splToken = new PublicKey(process.env.USDC_MINT);
-const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
-console.log(clusterApiUrl('devnet'));
 const MERCHANT_WALLET = new PublicKey("CVmz887tvi36wB2Jw7aYAHfenB2KJk5MHgaNV6xEjpEr");
 
 app.post('/api/merchant',async(request,response)=>{
@@ -46,15 +44,24 @@ app.post('/api/merchant',async(request,response)=>{
     // create spl transfer instruction
     // const splTransferIx = await createSplTransferIx(sender, connection);
 
-    // create the transaction
-    const transaction = new Transaction(
-      SystemProgram.transfer({
-        fromPubkey: sender,
-        toPubkey: MERCHANT_WALLET,
-        lamports: 1000000000,
-      })
-    );
+    // Get the recent blockhash
+    const recentBlockhash = await connection.getLatestBlockhash();
 
+    tr= SystemProgram.transfer({
+      fromPubkey: sender,
+      toPubkey: MERCHANT_WALLET,
+      lamports: 1000000000, // 1sol =1,0000,000 lamports
+    });
+
+    // create the transaction
+    const transaction = new Transaction();
+    transaction.add(tr);
+
+    const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
+    const bh= await connection.getLatestBlockhash();
+    transaction.recentBlockhash=bh.blockhash;
+
+    
       // Serialize and return the unsigned transaction.
       const serializedTransaction = transaction.serialize({
         verifySignatures: false,
