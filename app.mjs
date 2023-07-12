@@ -34,6 +34,7 @@ const MERCHANT_WALLET = new PublicKey("CVmz887tvi36wB2Jw7aYAHfenB2KJk5MHgaNV6xEj
 app.post('/api/merchant',async(request,response)=>{
 
    // Account provided in the transaction request body by the wallet.
+   console.log(request.body?.account);
    const accountField = request.body?.account;
    if (!accountField) throw new Error('missing account');
    
