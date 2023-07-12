@@ -1,7 +1,18 @@
-import { clusterApiUrl, Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js';
-import BigNumber from 'bignumber.js';
-import { createTransferCheckedInstruction, getAccount, getAssociatedTokenAddress, getMint } from '@solana/spl-token';
-import { TEN } from '@solana/pay';
+const {
+  clusterApiUrl,
+  Connection,
+  Keypair,
+  PublicKey,
+  Transaction,
+} = require('@solana/web3.js');
+const BigNumber = require('bignumber.js');
+const {
+  createTransferCheckedInstruction,
+  getAccount,
+  getAssociatedTokenAddress,
+  getMint,
+} = require('@solana/spl-token');
+const { TEN } = require('@solana/pay');
 
 const express = require('express');
 const bodyParser = require('body-parser');
