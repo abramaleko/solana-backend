@@ -1,30 +1,16 @@
-const express = require('express');
-const bodyParser = require('body-parser');
+const app = require('express')();
+const { v4 } = require('uuid');
 
-const app = express();
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-// API endpoints will be defined here
-
-//const port = 3000; // choose any port you prefer
-
-// app.listen(port, () => {
-//   console.log(`Server running on port ${port}`);
-// });
-
-// GET endpoint
-app.get('/api/merchant', (req, res) => {
-  
-    const label = 'Abraham Maleko (The Developer)';
-    const icon = 'https://exiledapes.academy/wp-content/uploads/2021/09/X_share.png';
-  
-    res.status(200).json({
-      label,
-      icon,
-    });
+app.get('/api', (req, res) => {
+  const path = `/api/item/${v4()}`;
+  res.setHeader('Content-Type', 'text/html');
+  res.setHeader('Cache-Control', 's-max-age=1, stale-while-revalidate');
+  res.end(`Hello! Go to item: <a href="${path}">${path}</a>`);
 });
 
-// Export the Express API
-module.exports = app.js;
+app.get('/api/item/:slug', (req, res) => {
+  const { slug } = req.params;
+  res.end(`Item: ${slug}`);
+});
+
+module.exports = app;
