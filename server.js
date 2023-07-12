@@ -11,6 +11,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const port = 3000; // choose any port you prefer
 
 app.listen(port, () => {
+  res.send("Express on Vercel");
   console.log(`Server running on port ${port}`);
 });
 
@@ -25,3 +26,6 @@ app.get('/api/merchant-info', (req, res) => {
       icon,
     });
 });
+
+// Export the Express API
+module.exports = server;
