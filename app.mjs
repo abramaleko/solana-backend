@@ -3,6 +3,8 @@ import BigNumber from 'bignumber.js';
 import { createTransferCheckedInstruction, getAccount, getAssociatedTokenAddress, getMint } from '@solana/spl-token';
 import { TEN } from '@solana/pay';
 import express from 'express';
+import axios from 'axios';
+
 
 
 const app = express();
@@ -47,7 +49,6 @@ app.post('/api/merchant',async(request,response)=>{
 
    //finds the amount, if not found throw error
    const amount = searchParams.get('amount');
-   console.log(amount);
    if (!amount) throw new Error('missing amount');
    
    const sender = new PublicKey(accountField);
@@ -79,8 +80,26 @@ app.post('/api/merchant',async(request,response)=>{
       const base64Transaction = serializedTransaction.toString('base64');
       const message = 'Your swaping tokens for your in-game points';
 
-      response.status(200).send({ transaction: base64Transaction, message });
+  // Create an object with the data you want to send
+  const postData = {
+    user_id:searchParams.get('user_id'),
+    amount: amount,
+    transaction_id: accountField,
+  };
 
+  try {
+    // Make a POST request to the desired server
+    const apiUrl = 'http://localhost/api/record-swaps'; // Replace with the actual URL
+    const apiResponse = await axios.post(apiUrl, postData);
+
+    // Handle the response from the server
+    console.log(apiResponse.data);
+    // Rest of your code...
+  } catch (error) {
+    console.error(error);
+    // Handle the error...
+  }
+      response.status(200).send({ transaction: base64Transaction, message });
 
 });
 
