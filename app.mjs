@@ -39,6 +39,9 @@ app.post('/api/merchant',async(request,response)=>{
    console.log(request.body);
    const accountField = request.body?.account;
    if (!accountField) throw new Error('missing account');
+
+   const amount = request.body?.amount;
+   console.log(amount);
    
    const sender = new PublicKey(accountField);
 
