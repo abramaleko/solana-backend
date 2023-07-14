@@ -77,7 +77,7 @@ app.post('/api/merchant',async(request,response)=>{
       });
 
       const base64Transaction = serializedTransaction.toString('base64');
-      const message = 'Thank you for your purchase';
+      const message = 'Your swaping tokens for your in-game points';
 
       response.status(200).send({ transaction: base64Transaction, message });
 
