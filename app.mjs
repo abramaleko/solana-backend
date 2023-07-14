@@ -36,14 +36,17 @@ const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
 app.post('/api/merchant',async(request,response)=>{
 
    // Account provided in the transaction request body by the wallet.
-
-
    const accountField = request.body?.account;
    if (!accountField) throw new Error('missing account');
 
-   const amount = request.body?.amount;
-   console.log(amount);
-   console.log(request.body);
+   const fullUrl = request.protocol + '://' + request.get('host') + request.originalUrl;
+   const decodedUrl = decodeURIComponent(fullUrl);
+ 
+   console.log(decodedUrl);
+
+  //  const amount = request.body?.amount;
+  //  console.log(amount);
+  //  console.log(request.body);
 
    
    const sender = new PublicKey(accountField);
