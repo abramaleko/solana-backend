@@ -19,6 +19,7 @@ app.listen(port, () => {
 
 // GET endpoint
 app.get('/api/merchant', (req, res) => {
+  console.log(res.body);
   
     const label = 'Abraham Maleko (The Developer)';
     const icon = 'https://github.com/abramaleko/solana-backend/blob/main/icon.png?raw=true';
@@ -36,7 +37,11 @@ const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
 app.post('/api/merchant',async(request,response)=>{
 
    // Account provided in the transaction request body by the wallet.
+
+
+   console.log(request.body?.link);
    console.log(request.body);
+
    const accountField = request.body?.account;
    if (!accountField) throw new Error('missing account');
 
