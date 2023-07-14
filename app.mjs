@@ -39,22 +39,18 @@ app.post('/api/merchant',async(request,response)=>{
    const accountField = request.body?.account;
    if (!accountField) throw new Error('missing account');
 
+   //decodes the url
    const fullUrl = request.protocol + '://' + request.get('host') + request.originalUrl;
    const decodedUrl = decodeURIComponent(fullUrl);
- 
    const url = new URL(decodedUrl);
    const searchParams = new URLSearchParams(url.search);
+
+   //finds the amount, if not found throw error
    const amount = searchParams.get('amount');
    console.log(amount);
-  //  const amount = request.body?.amount;
-  //  console.log(amount);
-  //  console.log(request.body);
-
+   if (!amount) throw new Error('missing amount');
    
    const sender = new PublicKey(accountField);
-
-    // create spl transfer instruction
-    // const splTransferIx = await createSplTransferIx(sender, connection);
 
     // Get the recent blockhash
     const recentBlockhash = await connection.getLatestBlockhash();
@@ -62,7 +58,7 @@ app.post('/api/merchant',async(request,response)=>{
     const tr= SystemProgram.transfer({
       fromPubkey: sender,
       toPubkey: MERCHANT_WALLET,
-      lamports: 1000000000, // 1sol =1,0000,000 lamports
+      lamports: amount * 1000000000 // 1sol =1,0000,000,000 lamports
     });
 
     // create the transaction
