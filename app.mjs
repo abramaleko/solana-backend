@@ -42,6 +42,7 @@ app.post('/api/merchant',async(request,response)=>{
    const fullUrl = request.protocol + '://' + request.get('host') + request.originalUrl;
    const decodedUrl = decodeURIComponent(fullUrl);
  
+   const url = new URL(decodedUrl);
    const searchParams = new URLSearchParams(url.search);
    const amount = searchParams.get('amount');
    console.log(amount);
