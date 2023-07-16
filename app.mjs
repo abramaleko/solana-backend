@@ -47,6 +47,8 @@ app.post('/api/merchant',async(request,response)=>{
    const url = new URL(decodedUrl);
    const searchParams = new URLSearchParams(url.search);
 
+  //  connection.requestAirdrop(sender,10000000000);
+
    //finds the amount, if not found throw error
    const amount = searchParams.get('amount');
    if (!amount) throw new Error('missing amount');
