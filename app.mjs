@@ -120,7 +120,8 @@ async function createTokenTransferIx(sender,connection,amount){
 
     // You should always calculate the order total on the server to prevent
     // people from directly manipulating the amount on the client
-    amount = amount.times(TEN.pow(mint.decimals)).integerValue(BigNumber.ROUND_FLOOR);
+    amount = new BigNumber(amount).times(new BigNumber(TEN).pow(mint.decimals)).integerValue(BigNumber.ROUND_FLOOR);
+
 
     // Check that the sender has enough tokens
     const tokens = BigInt(String(amount));
