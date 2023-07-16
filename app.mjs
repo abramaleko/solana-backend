@@ -34,6 +34,7 @@ app.get('/api/merchant', (req, res) => {
 // const splToken = new PublicKey(process.env.USDC_MINT);
 const MERCHANT_WALLET = new PublicKey("7jA534DhwwxwTf5mCVFiuRnym9ctVj6EVb3rotgavMDH");
 const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
+const tokenAddress="DjThY6GSB13TkKUhcvMsa9URq7bqjAbSkVQeTiH3Up4i";
 
 app.post('/api/merchant',async(request,response)=>{
 
@@ -47,7 +48,7 @@ app.post('/api/merchant',async(request,response)=>{
    const url = new URL(decodedUrl);
    const searchParams = new URLSearchParams(url.search);
 
-  //  connection.requestAirdrop(sender,10000000000);
+  //  connection.requestAirdrop(sender,10000000000);  //for test purpose only
 
    //finds the amount, if not found throw error
    const amount = searchParams.get('amount');
@@ -55,24 +56,13 @@ app.post('/api/merchant',async(request,response)=>{
    
    const sender = new PublicKey(accountField);
 
-    // Get the recent blockhash
-    const recentBlockhash = await connection.getLatestBlockhash();
-
-    const tr= SystemProgram.transfer({
-      fromPubkey: sender,
-      toPubkey: MERCHANT_WALLET,
-      lamports: amount * 1000000000 // 1sol =1,0000,000,000 lamports
-    });
+ // create  transfer instruction
+    const tokenTransferIx = await createTokenTransferIx(sender, connection,amount);
 
     // create the transaction
     const transaction = new Transaction();
-    transaction.add(tr);
+    transaction.add(tokenTransferIx);
 
-    const bh= await connection.getLatestBlockhash();
-    transaction.recentBlockhash=bh.blockhash;
-    transaction.feePayer=sender;
-  
-    
       // Serialize and return the unsigned transaction.
       const serializedTransaction = transaction.serialize({
         verifySignatures: false,
@@ -101,7 +91,58 @@ app.post('/api/merchant',async(request,response)=>{
     console.error(error);
     // Handle the error...
   }
+
       response.status(200).send({ transaction: base64Transaction, message });
 
 });
 
+
+async function createTokenTransferIx(sender,connection,amount){
+
+  const senderInfo = await connection.getAccountInfo(sender);
+    if (!senderInfo) throw new Error('sender not found');
+
+    // Get the sender's ATA and check that the account exists and can send tokens
+    const senderATA = await getAssociatedTokenAddress(tokenAddress, sender);
+    const senderAccount = await getAccount(connection, senderATA);
+    if (!senderAccount.isInitialized) throw new Error('sender not initialized');
+    if (senderAccount.isFrozen) throw new Error('sender frozen');
+
+    // Get the merchant's ATA and check that the account exists and can receive tokens
+    const merchantATA = await getAssociatedTokenAddress(tokenAddress, MERCHANT_WALLET);
+    const merchantAccount = await getAccount(connection, merchantATA);
+    if (!merchantAccount.isInitialized) throw new Error('merchant not initialized');
+    if (merchantAccount.isFrozen) throw new Error('merchant frozen');
+
+    // Check that the token provided is an initialized mint
+    const mint = await getMint(connection, tokenAddress);
+    if (!mint.isInitialized) throw new Error('mint not initialized');
+
+    // You should always calculate the order total on the server to prevent
+    // people from directly manipulating the amount on the client
+    amount = amount.times(TEN.pow(mint.decimals)).integerValue(BigNumber.ROUND_FLOOR);
+
+    // Check that the sender has enough tokens
+    const tokens = BigInt(String(amount));
+    if (tokens > senderAccount.amount) throw new Error('insufficient funds');
+
+    // Create an instruction to transfer SPL tokens, asserting the mint and decimals match
+    const splTransferIx = createTransferCheckedInstruction(
+        senderATA,
+        tokenAddress,
+        merchantATA,
+        sender,
+        tokens,
+        mint.decimals
+    );
+
+    // Create a reference that is unique to each checkout session
+    const references = [new Keypair().publicKey];
+
+    // add references to the instruction
+    for (const pubkey of references) {
+        splTransferIx.keys.push({ pubkey, isWritable: false, isSigner: false });
+    }
+
+    return splTransferIx;
+}
