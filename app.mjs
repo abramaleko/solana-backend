@@ -53,6 +53,8 @@ app.post('/api/merchant',async(request,response)=>{
    
    const sender = new PublicKey(accountField);
 
+   console.log(sender);
+
  // create  transfer instruction
     const tokenTransferIx = await createTokenTransferIx(sender, connection,amount);
 
@@ -95,6 +97,10 @@ app.post('/api/merchant',async(request,response)=>{
 
 
 async function createTokenTransferIx(sender,connection,amount){
+
+  console.log(123);
+  console.log(sender);
+
 
   const senderInfo = await connection.getAccountInfo(sender);
     if (!senderInfo) throw new Error('sender not found');
