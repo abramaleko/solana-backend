@@ -28,7 +28,7 @@ app.get('/api/merchant', (req, res) => {
     });
 });
 
-const MERCHANT_WALLET = new PublicKey("EmPnKvMjNLFyPTx5kau2U41JXqD9qUXKY3Qig8hvz5Ek i");
+const MERCHANT_WALLET = new PublicKey("EmPnKvMjNLFyPTx5kau2U41JXqD9qUXKY3Qig8hvz5Ek");
 const connection = new Connection('https://api.mainnet-beta.solana.com', 'confirmed');
 const tokenAddress=new PublicKey("9jDpKzpHz6fatL8CiJjRhAGsLJmLMzXvynwxY5y7ykKF");
 
