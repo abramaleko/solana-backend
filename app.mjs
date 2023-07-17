@@ -28,9 +28,9 @@ app.get('/api/merchant', (req, res) => {
     });
 });
 
-const MERCHANT_WALLET = new PublicKey("7jA534DhwwxwTf5mCVFiuRnym9ctVj6EVb3rotgavMDH");
+const MERCHANT_WALLET = new PublicKey("EmPnKvMjNLFyPTx5kau2U41JXqD9qUXKY3Qig8hvz5Ek i");
 const connection = new Connection('https://api.mainnet-beta.solana.com', 'confirmed');
-const tokenAddress=new PublicKey("EmXq3Ni9gfudTiyNKzzYvpnQqnJEMRw2ttnVXoJXjLo1");
+const tokenAddress=new PublicKey("9jDpKzpHz6fatL8CiJjRhAGsLJmLMzXvynwxY5y7ykKF");
 
 
 app.post('/api/merchant',async(request,response)=>{
