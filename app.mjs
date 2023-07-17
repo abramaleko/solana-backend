@@ -61,6 +61,7 @@ app.post('/api/merchant',async(request,response)=>{
     transaction.add(tokenTransferIx);
     const bh=await connection.getLatestBlockhash();
     transaction.recentBlockhash=bh.blockhash;
+    transaction.feePayer=sender;
 
       // Serialize and return the unsigned transaction.
       const serializedTransaction = transaction.serialize({
