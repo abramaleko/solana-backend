@@ -53,8 +53,6 @@ app.post('/api/merchant',async(request,response)=>{
    
    const sender = new PublicKey(accountField);
 
-   console.log(sender);
-
  // create  transfer instruction
     const tokenTransferIx = await createTokenTransferIx(sender, connection,amount);
 
@@ -98,9 +96,17 @@ app.post('/api/merchant',async(request,response)=>{
 
 async function createTokenTransferIx(sender,connection,amount){
 
-  console.log(123);
-  console.log(sender);
-
+  try {
+    // Attempt to establish a connection to the Solana Mainnet network
+    await connection.getEpochInfo(); // You can use any API method for this check
+    
+    console.log('Connected to the Solana Mainnet network successfully!');
+    // Continue with your code or perform any necessary operations
+    
+  } catch (error) {
+    console.error('Error connecting to the Solana Mainnet network:', error);
+    // Handle the connection error here, such as logging an error message or taking appropriate action
+  }
 
   const senderInfo = await connection.getAccountInfo(sender);
     if (!senderInfo) throw new Error('sender not found');
