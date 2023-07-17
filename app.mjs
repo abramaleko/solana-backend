@@ -1,12 +1,9 @@
-import { clusterApiUrl, Connection, Keypair, PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
+import {Connection, Keypair, PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
 import BigNumber from 'bignumber.js';
 import { createTransferCheckedInstruction, getAccount, getAssociatedTokenAddress, getMint } from '@solana/spl-token';
 import { TEN } from '@solana/pay';
 import express from 'express';
 import axios from 'axios';
-
-
-
 const app = express();
 
 app.use(express.json());
@@ -32,8 +29,9 @@ app.get('/api/merchant', (req, res) => {
 });
 
 const MERCHANT_WALLET = new PublicKey("7jA534DhwwxwTf5mCVFiuRnym9ctVj6EVb3rotgavMDH");
-const connection = new Connection(clusterApiUrl('mainnet'), 'confirmed');
+const connection = new Connection('https://api.mainnet-beta.solana.com', 'confirmed');
 const tokenAddress=new PublicKey("EmXq3Ni9gfudTiyNKzzYvpnQqnJEMRw2ttnVXoJXjLo1");
+
 
 app.post('/api/merchant',async(request,response)=>{
 
