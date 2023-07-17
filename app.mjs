@@ -31,9 +31,8 @@ app.get('/api/merchant', (req, res) => {
     });
 });
 
-// const splToken = new PublicKey(process.env.USDC_MINT);
 const MERCHANT_WALLET = new PublicKey("7jA534DhwwxwTf5mCVFiuRnym9ctVj6EVb3rotgavMDH");
-const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
+const connection = new Connection(clusterApiUrl('mainnet'), 'confirmed');
 const tokenAddress=new PublicKey("EmXq3Ni9gfudTiyNKzzYvpnQqnJEMRw2ttnVXoJXjLo1");
 
 app.post('/api/merchant',async(request,response)=>{
