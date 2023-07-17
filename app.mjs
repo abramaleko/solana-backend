@@ -95,25 +95,16 @@ app.post('/api/merchant',async(request,response)=>{
 
 
 async function createTokenTransferIx(sender,connection,amount){
+ 
 
-  try {
-    // Attempt to establish a connection to the Solana Mainnet network
-    await connection.getEpochInfo(); // You can use any API method for this check
-    
-    console.log('Connected to the Solana Mainnet network successfully!');
-    // Continue with your code or perform any necessary operations
-    
-  } catch (error) {
-    console.error('Error connecting to the Solana Mainnet network:', error);
-    // Handle the connection error here, such as logging an error message or taking appropriate action
-  }
-
-  const senderInfo = await connection.getAccountInfo(sender);
-    if (!senderInfo) throw new Error('sender not found');
+  // const senderInfo = await connection.getAccountInfo(sender);
+  //   if (!senderInfo) throw new Error('sender not found');
 
     // Get the sender's ATA and check that the account exists and can send tokens
     const senderATA = await getAssociatedTokenAddress(tokenAddress, sender);
+    console.log(senderATA);
     const senderAccount = await getAccount(connection, senderATA);
+    console.log(senderAccount);
     if (!senderAccount.isInitialized) throw new Error('sender not initialized');
     if (senderAccount.isFrozen) throw new Error('sender frozen');
 
