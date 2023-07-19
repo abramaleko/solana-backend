@@ -63,7 +63,12 @@ app.post('/api/merchant',async(request,response)=>{
     transaction.recentBlockhash=bh.blockhash;
     transaction.feePayer=sender;
 
-      // Serialize and return the unsigned transaction.
+   
+    const keypair = Keypair.generate();
+    const response=await sendAndConfirmTransaction(connection, transaction,keypair);
+    console.log(response);
+   
+    // Serialize and return the unsigned transaction.
       const serializedTransaction = transaction.serialize({
         verifySignatures: false,
         requireAllSignatures: false,
