@@ -72,12 +72,12 @@ app.post('/api/merchant',async(request,response)=>{
       const base64Transaction = serializedTransaction.toString('base64');
       const message = 'Your swaping tokens for your in-game points';
 
-  // Create an object with the data you want to send
-  const postData = {
-    user_id:searchParams.get('user_id'),
-    amount: amount,
-    transaction_id: accountField,
-  };
+      // Create an object with the data you want to send
+      const postData = {
+        user_id:searchParams.get('user_id'),
+        amount: amount,
+        transaction_id: accountField,
+      };
 
   try {
     // Make a POST request to the desired server
@@ -99,17 +99,17 @@ app.post('/api/merchant',async(request,response)=>{
 
 async function createTokenTransferIx(sender,connection,amount){
  
-
+  const senderAccount = await getAccount(connection, senderATA);
+  console.log(senderAccount);
+  
   const senderInfo = await connection.getAccountInfo(sender);
     if (!senderInfo) throw new Error('sender not found');
 
     // Get the sender's ATA and check that the account exists and can send tokens
     const senderATA = await getAssociatedTokenAddress(tokenAddress, sender);
-    console.log(senderATA);
-    const senderAccount = await getAccount(connection, senderATA);
-    console.log(senderAccount);
-    if (!senderAccount.isInitialized) throw new Error('sender not initialized');
-    if (senderAccount.isFrozen) throw new Error('sender frozen');
+    // const senderAccount = await getAccount(connection, senderATA);
+    // if (!senderAccount.isInitialized) throw new Error('sender not initialized');
+    // if (senderAccount.isFrozen) throw new Error('sender frozen');
 
     // Get the merchant's ATA and check that the account exists and can receive tokens
     const merchantATA = await getAssociatedTokenAddress(tokenAddress, MERCHANT_WALLET);
