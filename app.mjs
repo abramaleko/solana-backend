@@ -99,12 +99,9 @@ app.post('/api/merchant',async(request,response)=>{
 
 async function createTokenTransferIx(sender,connection,amount){
  
-  // const senderInfo = await connection.getAccountInfo(sender);
-  //   if (!senderInfo) throw new Error('sender not found');
-
-    // Get the sender's ATA and check that the account exists and can send tokens
+    // Get the sender's ATA and check that the account exists and can send tokens if not found create one
     let senderATA = await getAssociatedTokenAddress(tokenAddress, sender);
-    if (!senderATA) {
+    if (!senderATA) { 
        senderATA = await createAssociatedTokenAccount(
         connection, // connection
         sender, // fee payer
