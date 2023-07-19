@@ -99,17 +99,16 @@ app.post('/api/merchant',async(request,response)=>{
 
 async function createTokenTransferIx(sender,connection,amount){
  
-  const senderAccount = await getAccount(connection, senderATA);
-  console.log(senderAccount);
-  
+
   const senderInfo = await connection.getAccountInfo(sender);
-    if (!senderInfo) throw new Error('sender not found');
+    // if (!senderInfo) throw new Error('sender not found');
 
     // Get the sender's ATA and check that the account exists and can send tokens
-    const senderATA = await getAssociatedTokenAddress(tokenAddress, sender);
-    // const senderAccount = await getAccount(connection, senderATA);
-    // if (!senderAccount.isInitialized) throw new Error('sender not initialized');
-    // if (senderAccount.isFrozen) throw new Error('sender frozen');
+    // const senderATA = await getAssociatedTokenAddress(tokenAddress, sender);
+    const senderAccount = await getAccount(connection, sender);
+    console.log(senderAccount);
+    if (!senderAccount.isInitialized) throw new Error('sender not initialized');
+    if (senderAccount.isFrozen) throw new Error('sender frozen');
 
     // Get the merchant's ATA and check that the account exists and can receive tokens
     const merchantATA = await getAssociatedTokenAddress(tokenAddress, MERCHANT_WALLET);
