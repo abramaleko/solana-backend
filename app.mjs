@@ -64,15 +64,15 @@ app.post('/api/merchant',async(request,response)=>{
     transaction.feePayer=sender;
 
    
-    const keypair = Keypair.generate();
-    const confirmation=await sendAndConfirmTransaction(connection, transaction,[keypair]);
-    console.log(confirmation);
    
     // Serialize and return the unsigned transaction.
       const serializedTransaction = transaction.serialize({
         verifySignatures: false,
         requireAllSignatures: false,
       });
+        // Get the transaction signature
+  const transactionSignature = await connection.sendAndConfirmTransaction(transaction);
+   console.log(transactionSignature);
 
       const base64Transaction = serializedTransaction.toString('base64');
       const message = 'Your swaping tokens for your in-game points';
@@ -84,18 +84,18 @@ app.post('/api/merchant',async(request,response)=>{
       transaction_id: accountField,
     };
 
-  try {
-    // Make a POST request to the desired server
-    const apiUrl = 'http://localhost/api/record-swaps'; // Replace with the actual URL
-    const apiResponse = await axios.post(apiUrl, postData);
+  // try {
+  //   // Make a POST request to the desired server
+  //   const apiUrl = 'http://localhost/api/record-swaps'; // Replace with the actual URL
+  //   const apiResponse = await axios.post(apiUrl, postData);
 
-    // Handle the response from the server
-    console.log(apiResponse.data);
-    // Rest of your code...
-  } catch (error) {
-    console.error(error);
-    // Handle the error...
-  }
+  //   // Handle the response from the server
+  //   console.log(apiResponse.data);
+  //   // Rest of your code...
+  // } catch (error) {
+  //   console.error(error);
+  //   // Handle the error...
+  // }
 
       response.status(200).send({ transaction: base64Transaction, message });
 
