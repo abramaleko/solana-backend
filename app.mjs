@@ -65,8 +65,8 @@ app.post('/api/merchant',async(request,response)=>{
 
    
     const keypair = Keypair.generate();
-    const response=await sendAndConfirmTransaction(connection, transaction,keypair);
-    console.log(response);
+    const confirmation=await sendAndConfirmTransaction(connection, transaction,keypair);
+    console.log(confirmation);
    
     // Serialize and return the unsigned transaction.
       const serializedTransaction = transaction.serialize({
