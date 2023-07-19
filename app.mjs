@@ -71,7 +71,7 @@ app.post('/api/merchant',async(request,response)=>{
         requireAllSignatures: false,
       });
         // Get the transaction signature
-  const transactionSignature = await connection.sendAndConfirmTransaction(transaction);
+  const transactionSignature = await sendAndConfirmTransaction(connection,transaction);
    console.log(transactionSignature);
 
       const base64Transaction = serializedTransaction.toString('base64');
