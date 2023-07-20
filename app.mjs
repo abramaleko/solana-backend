@@ -31,7 +31,6 @@ app.get('/api/merchant', (req, res) => {
 const MERCHANT_WALLET = new PublicKey("EmPnKvMjNLFyPTx5kau2U41JXqD9qUXKY3Qig8hvz5Ek");
 const connection = new Connection('https://api.mainnet-beta.solana.com', 'confirmed');
 const tokenAddress=new PublicKey("9jDpKzpHz6fatL8CiJjRhAGsLJmLMzXvynwxY5y7ykKF");
-let references;
 
 app.post('/api/merchant',async(request,response)=>{
 
@@ -80,18 +79,20 @@ app.post('/api/merchant',async(request,response)=>{
       transaction_id: base64Transaction,
     };
    
-  try {
-    // Make a POST request to the desired server
-    const apiUrl = 'https://cayc.hopto.org:4430/api/record-swaps';
-    const apiResponse = await axios.post(apiUrl, postData);
+try {
+  // Make a POST request to the desired server
+  const apiUrl = 'https://cayc.hopto.org:4430/api/record-swaps';
+  const apiResponse = await axios.post(apiUrl, postData);
 
-    // Handle the response from the server
-    console.log(apiResponse.data);
-    // Rest of your code...
-  } catch (error) {
-    console.error(error);
-    // Handle the error...
-  }
+  // Handle the response from the server
+  console.log(apiResponse.data);
+  // Rest of your code...
+} catch (error) {
+  // Log the error details for debugging
+  console.error('An error occurred during the API request:', error.message);
+  console.error('Error stack trace:', error.stack);
+  // Handle the error...
+}
 
      response.status(200).send({ transaction: base64Transaction, message });
 
@@ -144,7 +145,7 @@ async function createTokenTransferIx(sender,connection,amount){
     );
 
     // Create a reference that is unique to each checkout session
-     references = [new Keypair().publicKey];
+    const references = [new Keypair().publicKey];
 
     // add references to the instruction
     for (const pubkey of references) {
