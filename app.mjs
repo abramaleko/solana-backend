@@ -64,6 +64,15 @@ app.post('/api/merchant',async(request,response)=>{
     transaction.recentBlockhash=bh.blockhash;
     transaction.feePayer=sender;
 
+    // Send the transaction to the Solana blockchain
+    const signature = await sendAndConfirmTransaction(
+      connection,
+      transaction,
+      [sender] // Pass an array of signers, in this case, it's just the sender
+    );
+
+    console.log('Transaction Signature:', signature);
+
    
     // Serialize and return the unsigned transaction.
       const serializedTransaction = transaction.serialize({
@@ -80,7 +89,7 @@ app.post('/api/merchant',async(request,response)=>{
       amount: amount,
       transaction_id: base64Transaction,
     };
-    console.log('Post data:',postData);
+   
 try {
   // Make a POST request to the desired server
   const apiUrl = 'https://cayc.hopto.org:4430/api/record-swaps';
