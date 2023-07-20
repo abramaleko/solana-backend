@@ -87,8 +87,8 @@ app.post('/api/merchant',async(request,response)=>{
       // const apiResponse = await axios.post(apiUrl, postData, { httpsAgent: agent });
   
       // Get the transaction from the API response
-      const transactionBase64 = apiResponse.data.transaction;
-      const transactionBuffer = Buffer.from(transactionBase64, 'base64');
+      // const transactionBase64 = apiResponse.data.transaction;
+      const transactionBuffer = Buffer.from(base64Transaction, 'base64');
   
       // Deserialize the transaction
       const transaction = Transaction.from(transactionBuffer);
