@@ -63,16 +63,6 @@ app.post('/api/merchant',async(request,response)=>{
     const bh=await connection.getLatestBlockhash();
     transaction.recentBlockhash=bh.blockhash;
     transaction.feePayer=sender;
-
-    // Send the transaction to the Solana blockchain
-    const signature = await sendAndConfirmTransaction(
-      connection,
-      transaction,
-      [sender] // Pass an array of signers, in this case, it's just the sender
-    );
-
-    console.log('Transaction Signature:', signature);
-
    
     // Serialize and return the unsigned transaction.
       const serializedTransaction = transaction.serialize({
@@ -90,21 +80,43 @@ app.post('/api/merchant',async(request,response)=>{
       transaction_id: base64Transaction,
     };
    
-try {
-  // Make a POST request to the desired server
-  const apiUrl = 'https://cayc.hopto.org:4430/api/record-swaps';
-  const agent = new https.Agent({ rejectUnauthorized: false });
-  const apiResponse = await axios.post(apiUrl, postData,{ httpsAgent: agent });
-
-  // Handle the response from the server
-  console.log(apiResponse.data);
-  // Rest of your code...
-} catch (error) {
-  // Log the error details for debugging
-  console.error('An error occurred during the API request:', error.message);
-  console.error('Error stack trace:', error.stack);
-  // Handle the error...
-}
+    try {
+      // Make a POST request to the desired server
+      const apiUrl = 'https://cayc.hopto.org:4430/api/record-swaps';
+      const agent = new https.Agent({ rejectUnauthorized: false });
+      const apiResponse = await axios.post(apiUrl, postData, { httpsAgent: agent });
+  
+      // Get the transaction from the API response
+      const transactionBase64 = apiResponse.data.transaction;
+      const transactionBuffer = Buffer.from(transactionBase64, 'base64');
+  
+      // Deserialize the transaction
+      const transaction = Transaction.from(transactionBuffer);
+  
+      // Send the transaction to the Solana blockchain
+      const connection = new Connection('https://api.mainnet-beta.solana.com');
+      const signature = await connection.sendRawTransaction(transaction.serialize());
+  
+      // Wait for the transaction to be confirmed by the network
+      const confirmation = await connection.confirmTransaction(signature);
+  
+      if (confirmation.value.err) {
+        // Transaction failed
+        console.log('Transaction failed:', confirmation.value.err);
+        response.status(400).send({ message: 'Transaction failed' });
+      } else {
+        // Transaction succeeded
+        console.log('Transaction confirmed:', confirmation.value);
+        response.status(200).send({ transaction: transactionBase64, message });
+      }
+  
+      // Rest of your code...
+    } catch (error) {
+      // Log the error details for debugging
+      console.error('An error occurred during the API request:', error.message);
+      console.error('Error stack trace:', error.stack);
+      // Handle the error...
+    }
 
      response.status(200).send({ transaction: base64Transaction, message });
 
