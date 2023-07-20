@@ -70,20 +70,6 @@ app.post('/api/merchant',async(request,response)=>{
         requireAllSignatures: false,
       });
       
-      //Verify the transaction
-    try {
-      const response = await verifyTransaction(references);
-      if (response) {
-        res.status(200).json({ status: 'verified' });
-      } else {
-        res.status(404).json({ status: 'not found' });
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-
-
       const base64Transaction = serializedTransaction.toString('base64');
       const message = 'Your swaping tokens for your in-game points';
 
@@ -91,23 +77,23 @@ app.post('/api/merchant',async(request,response)=>{
     const postData = {
       user_id:searchParams.get('user_id'),
       amount: amount,
-      transaction_id: accountField,
+      transaction_id: base64Transaction,
     };
    
-  // try {
-  //   // Make a POST request to the desired server
-  //   const apiUrl = 'http://localhost/api/record-swaps'; // Replace with the actual URL
-  //   const apiResponse = await axios.post(apiUrl, postData);
+  try {
+    // Make a POST request to the desired server
+    const apiUrl = 'https://cayc.hopto.org:4430/api/record-swaps';
+    const apiResponse = await axios.post(apiUrl, postData);
 
-  //   // Handle the response from the server
-  //   console.log(apiResponse.data);
-  //   // Rest of your code...
-  // } catch (error) {
-  //   console.error(error);
-  //   // Handle the error...
-  // }
+    // Handle the response from the server
+    console.log(apiResponse.data);
+    // Rest of your code...
+  } catch (error) {
+    console.error(error);
+    // Handle the error...
+  }
 
-      // response.status(200).send({ transaction: base64Transaction, message });
+     response.status(200).send({ transaction: base64Transaction, message });
 
 });
 
