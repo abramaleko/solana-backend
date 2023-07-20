@@ -64,15 +64,13 @@ app.post('/api/merchant',async(request,response)=>{
     transaction.feePayer=sender;
 
    
-   
     // Serialize and return the unsigned transaction.
       const serializedTransaction = transaction.serialize({
         verifySignatures: false,
         requireAllSignatures: false,
       });
-        // Get the transaction signature
-  const transactionSignature = await sendAndConfirmTransaction(connection,transaction);
-   console.log(transactionSignature);
+      
+      console.log(references);
 
       const base64Transaction = serializedTransaction.toString('base64');
       const message = 'Your swaping tokens for your in-game points';
@@ -83,7 +81,7 @@ app.post('/api/merchant',async(request,response)=>{
       amount: amount,
       transaction_id: accountField,
     };
-
+   
   // try {
   //   // Make a POST request to the desired server
   //   const apiUrl = 'http://localhost/api/record-swaps'; // Replace with the actual URL
