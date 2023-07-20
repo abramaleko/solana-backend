@@ -70,7 +70,7 @@ app.post('/api/merchant',async(request,response)=>{
         requireAllSignatures: false,
       });
       
-      console.log(references);
+      console.log('reference:' +references);
 
       const base64Transaction = serializedTransaction.toString('base64');
       const message = 'Your swaping tokens for your in-game points';
@@ -113,7 +113,6 @@ async function createTokenTransferIx(sender,connection,amount){
       );
     }
     const senderAccount = await getAccount(connection, senderATA);
-    console.log(senderAccount);
     if (!senderAccount.isInitialized) throw new Error('sender not initialized');
     if (senderAccount.isFrozen) throw new Error('sender frozen');
 
