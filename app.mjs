@@ -70,7 +70,19 @@ app.post('/api/merchant',async(request,response)=>{
         requireAllSignatures: false,
       });
       
-      console.log('reference:' +references);
+      //Verify the transaction
+    try {
+      const response = await verifyTransaction(references);
+      if (response) {
+        res.status(200).json({ status: 'verified' });
+      } else {
+        res.status(404).json({ status: 'not found' });
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+
 
       const base64Transaction = serializedTransaction.toString('base64');
       const message = 'Your swaping tokens for your in-game points';
@@ -95,7 +107,7 @@ app.post('/api/merchant',async(request,response)=>{
   //   // Handle the error...
   // }
 
-      response.status(200).send({ transaction: base64Transaction, message });
+      // response.status(200).send({ transaction: base64Transaction, message });
 
 });
 
