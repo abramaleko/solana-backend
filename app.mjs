@@ -78,17 +78,11 @@ app.post('/api/merchant',async(request,response)=>{
       amount: amount,
       transaction_id: base64Transaction,
     };
-   
-  try {
-    // Make a POST request to the desired server
-    const apiUrl = 'https://cayc.hopto.org:4430/api/record-swaps';
-    const agent = new https.Agent({ rejectUnauthorized: false });
-
-    const apiResponse = await axios.post(apiUrl, postData,{ httpsAgent: agent });
 try {
   // Make a POST request to the desired server
   const apiUrl = 'https://cayc.hopto.org:4430/api/record-swaps';
-  const apiResponse = await axios.post(apiUrl, postData);
+  const agent = new https.Agent({ rejectUnauthorized: false });
+  const apiResponse = await axios.post(apiUrl, postData,{ httpsAgent: agent });
 
   // Handle the response from the server
   console.log(apiResponse.data);
