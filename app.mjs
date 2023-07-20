@@ -31,7 +31,7 @@ app.get('/api/merchant', (req, res) => {
 const MERCHANT_WALLET = new PublicKey("EmPnKvMjNLFyPTx5kau2U41JXqD9qUXKY3Qig8hvz5Ek");
 const connection = new Connection('https://api.mainnet-beta.solana.com', 'confirmed');
 const tokenAddress=new PublicKey("9jDpKzpHz6fatL8CiJjRhAGsLJmLMzXvynwxY5y7ykKF");
-
+let references;
 
 app.post('/api/merchant',async(request,response)=>{
 
@@ -147,7 +147,7 @@ async function createTokenTransferIx(sender,connection,amount){
     );
 
     // Create a reference that is unique to each checkout session
-    const references = [new Keypair().publicKey];
+     references = [new Keypair().publicKey];
 
     // add references to the instruction
     for (const pubkey of references) {
