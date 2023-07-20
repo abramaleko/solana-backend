@@ -4,7 +4,6 @@ import { createTransferCheckedInstruction, getAccount, getAssociatedTokenAddress
 import { TEN } from '@solana/pay';
 import express from 'express';
 import axios from 'axios';
-import https from 'https';
 
 const app = express();
 
@@ -80,6 +79,7 @@ app.post('/api/merchant',async(request,response)=>{
       amount: amount,
       transaction_id: base64Transaction,
     };
+    console.log('Post data:',postData);
 try {
   // Make a POST request to the desired server
   const apiUrl = 'https://cayc.hopto.org:4430/api/record-swaps';
