@@ -66,37 +66,12 @@ app.post('/api/merchant',async(request,response)=>{
    
     // Serialize and return the unsigned transaction.
       const serializedTransaction = transaction.serialize({
-        verifySignatures: false,
+         verifySignatures: false,
         requireAllSignatures: false,
       });
       
       const base64Transaction = serializedTransaction.toString('base64');
       const message = 'Your swaping tokens for your in-game points';
-
-      // const serializedTransactionInfo = Buffer.from(base64Transaction, 'base64');
-      // const transactionInfo = Transaction.deserialize(serializedTransaction);
-
-     // Check if the transaction was signed by the sender
-    const isTransactionSignedBySender = transaction.verifySignatures(sender);
-    console.log('isTransactionSignedBySender:',isTransactionSignedBySender)
-
-    // Query the blockchain to check the status of the transaction
-    const transactionResult = await connection.getSignatureStatus(transaction.signature);
-    console.log('transactionResult:',transactionResult)
-
-      if (transactionResult?.err) {
-        console.error('Transaction failed:', transactionResult.err);
-        // Handle the case where the transaction failed
-      } else if (isTransactionSignedBySender) {
-        console.log('Transaction successful and signed by the sender.');
-        // Handle the case where the transaction was successful and signed by the sender
-      } else {
-        console.log('Transaction successful but not signed by the sender.');
-        // Handle the case where the transaction was successful but not signed by the sender (malicious response)
-      }
-
-
-
 
     // Create an object with the data you want to send
     const postData = {
@@ -104,6 +79,22 @@ app.post('/api/merchant',async(request,response)=>{
       amount: amount,
       transaction_id: base64Transaction,
     };
+    
+    try {
+      // Make a POST request to the desired server
+      const apiUrl = 'https://cayc.hopto.org:4430/api/record-swaps';
+      const agent = new https.Agent({ rejectUnauthorized: false });
+      const apiResponse = await axios.post(apiUrl, postData,{ httpsAgent: agent });
+    
+      // Handle the response from the server
+      console.log(apiResponse.data);
+      // Rest of your code...
+    } catch (error) {
+      // Log the error details for debugging
+      console.error('An error occurred during the API request:', error.message);
+      console.error('Error stack trace:', error.stack);
+      // Handle the error...
+    }
 
      response.status(200).send({ transaction: base64Transaction, message });
 
