@@ -73,8 +73,16 @@ app.post('/api/merchant',async(request,response)=>{
       const base64Transaction = serializedTransaction.toString('base64');
       const message = 'Your swaping tokens for your in-game points';
 
-      const serializedTransactionInfo = Buffer.from(base64Transaction, 'base64');
-      const transactionInfo = Transaction.deserialize(serializedTransaction);
+      // const serializedTransactionInfo = Buffer.from(base64Transaction, 'base64');
+      // const transactionInfo = Transaction.deserialize(serializedTransaction);
+
+     // Check if the transaction was signed by the sender
+    const isTransactionSignedBySender = transaction.verifySignatures(sender.publicKey);
+    console.log('isTransactionSignedBySender:',isTransactionSignedBySender)
+
+    // Query the blockchain to check the status of the transaction
+    const transactionResult = await connection.getSignatureStatus(transaction.signature);
+    console.log('transactionResult:',transactionResult)
 
       if (transactionResult?.err) {
         console.error('Transaction failed:', transactionResult.err);
@@ -87,11 +95,7 @@ app.post('/api/merchant',async(request,response)=>{
         // Handle the case where the transaction was successful but not signed by the sender (malicious response)
       }
 
-    // Check if the transaction was signed by the sender
-    const isTransactionSignedBySender = transaction.verifySignatures(sender.publicKey);
 
-    // Query the blockchain to check the status of the transaction
-    const transactionResult = await connection.getSignatureStatus(transaction.signature);
 
 
     // Create an object with the data you want to send
