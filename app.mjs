@@ -73,52 +73,30 @@ app.post('/api/merchant',async(request,response)=>{
       const base64Transaction = serializedTransaction.toString('base64');
       const message = 'Your swaping tokens for your in-game points';
 
+     // Decode the base64Transaction to get the serialized transaction
+     const serializedTransactionInfo = Buffer.from(base64Transaction, 'base64');
+     
+     // Deserialize the transaction
+    const transactionInfo = Transaction.from(serializedTransactionInfo);
+
+    // Verify if the transaction executed successfully
+    const isTransactionSuccessful = await verifyTransaction(transactionInfo);
+    console.log(isTransactionSuccessful);
+
+    if (isTransactionSuccessful) {
+      console.log('Transaction was successful!');
+      // Rest of your code...
+    } else {
+      console.log('Transaction failed or encountered an error!');
+      // Handle the error...
+    }
+
     // Create an object with the data you want to send
     const postData = {
       user_id:searchParams.get('user_id'),
       amount: amount,
       transaction_id: base64Transaction,
     };
-   
-    try {
-      // Make a POST request to the desired server
-      // const apiUrl = 'https://cayc.hopto.org:4430/api/record-swaps';
-      // const agent = new https.Agent({ rejectUnauthorized: false });
-      // const apiResponse = await axios.post(apiUrl, postData, { httpsAgent: agent });
-  
-      // Get the transaction from the API response
-      // const transactionBase64 = apiResponse.data.transaction;
-      const transactionBuffer = Buffer.from(base64Transaction, 'base64');
-  
-      // Deserialize the transaction
-      const transaction = Transaction.from(transactionBuffer);
-  
-      // Send the transaction to the Solana blockchain
-      const connection = new Connection('https://api.mainnet-beta.solana.com');
-      const signature = await connection.sendRawTransaction(transaction.serialize());
-      console.log(signature);
-  
-      // Wait for the transaction to be confirmed by the network
-      const confirmation = await connection.confirmTransaction(signature);
-      console.log(confirmation);
-
-      if (confirmation.value.err) {
-        // Transaction failed
-        console.log('Transaction failed:', confirmation.value.err);
-        response.status(400).send({ message: 'Transaction failed' });
-      } else {
-        // Transaction succeeded
-        console.log('Transaction confirmed:', confirmation.value);
-        response.status(200).send({ transaction: transactionBase64, message });
-      }
-  
-      // Rest of your code...
-    } catch (error) {
-      // Log the error details for debugging
-      console.error('An error occurred during the API request:', error.message);
-      console.error('Error stack trace:', error.stack);
-      // Handle the error...
-    }
 
      response.status(200).send({ transaction: base64Transaction, message });
 
