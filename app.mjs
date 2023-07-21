@@ -96,10 +96,12 @@ app.post('/api/merchant',async(request,response)=>{
       // Send the transaction to the Solana blockchain
       const connection = new Connection('https://api.mainnet-beta.solana.com');
       const signature = await connection.sendRawTransaction(transaction.serialize());
+      console.log(signature);
   
       // Wait for the transaction to be confirmed by the network
       const confirmation = await connection.confirmTransaction(signature);
-  
+      console.log(confirmation);
+
       if (confirmation.value.err) {
         // Transaction failed
         console.log('Transaction failed:', confirmation.value.err);
