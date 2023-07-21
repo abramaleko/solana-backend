@@ -77,7 +77,7 @@ app.post('/api/merchant',async(request,response)=>{
       // const transactionInfo = Transaction.deserialize(serializedTransaction);
 
      // Check if the transaction was signed by the sender
-    const isTransactionSignedBySender = transaction.verifySignatures(sender.publicKey);
+    const isTransactionSignedBySender = transaction.verifySignatures(sender);
     console.log('isTransactionSignedBySender:',isTransactionSignedBySender)
 
     // Query the blockchain to check the status of the transaction
