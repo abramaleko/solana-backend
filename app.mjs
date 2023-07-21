@@ -73,23 +73,26 @@ app.post('/api/merchant',async(request,response)=>{
       const base64Transaction = serializedTransaction.toString('base64');
       const message = 'Your swaping tokens for your in-game points';
 
-     // Decode the base64Transaction to get the serialized transaction
-     const serializedTransactionInfo = Buffer.from(base64Transaction, 'base64');
-     
-     // Deserialize the transaction
-    const transactionInfo = Transaction.from(serializedTransactionInfo);
+      const serializedTransactionInfo = Buffer.from(base64Transaction, 'base64');
+      const transactionInfo = Transaction.deserialize(serializedTransaction);
 
-    // Verify if the transaction executed successfully
-    const isTransactionSuccessful = await verifyTransaction(transactionInfo);
-    console.log(isTransactionSuccessful);
+      if (transactionResult?.err) {
+        console.error('Transaction failed:', transactionResult.err);
+        // Handle the case where the transaction failed
+      } else if (isTransactionSignedBySender) {
+        console.log('Transaction successful and signed by the sender.');
+        // Handle the case where the transaction was successful and signed by the sender
+      } else {
+        console.log('Transaction successful but not signed by the sender.');
+        // Handle the case where the transaction was successful but not signed by the sender (malicious response)
+      }
 
-    if (isTransactionSuccessful) {
-      console.log('Transaction was successful!');
-      // Rest of your code...
-    } else {
-      console.log('Transaction failed or encountered an error!');
-      // Handle the error...
-    }
+    // Check if the transaction was signed by the sender
+    const isTransactionSignedBySender = transaction.verifySignatures(sender.publicKey);
+
+    // Query the blockchain to check the status of the transaction
+    const transactionResult = await connection.getSignatureStatus(transaction.signature);
+
 
     // Create an object with the data you want to send
     const postData = {
