@@ -1,4 +1,4 @@
-import {Connection, Keypair, PublicKey, sendAndConfirmTransaction, Transaction } from '@solana/web3.js';
+import {Connection, Keypair, PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
 import BigNumber from 'bignumber.js';
 import { createTransferCheckedInstruction, getAccount, getAssociatedTokenAddress, getMint } from '@solana/spl-token';
 import { TEN } from '@solana/pay';
@@ -21,8 +21,8 @@ app.listen(port, () => {
 // GET endpoint
 app.get('/api/merchant', (req, res) => {
   
-    const label = 'Abraham Maleko (The Developer)';
-    const icon = 'https://github.com/abramaleko/solana-backend/blob/main/icon.png?raw=true';
+    const label = ' CAYC SWAP ';
+    const icon = 'https://github.com/UnrealKingdoms/public/blob/996bf1ec127402a2d28d40c28a832259bdcfcb01/icon.png?raw=true';
   
     res.status(200).json({
       label,
@@ -33,6 +33,7 @@ app.get('/api/merchant', (req, res) => {
 const MERCHANT_WALLET = new PublicKey("EmPnKvMjNLFyPTx5kau2U41JXqD9qUXKY3Qig8hvz5Ek");
 const connection = new Connection('https://api.mainnet-beta.solana.com', 'confirmed');
 const tokenAddress=new PublicKey("9jDpKzpHz6fatL8CiJjRhAGsLJmLMzXvynwxY5y7ykKF");
+
 
 app.post('/api/merchant',async(request,response)=>{
 
@@ -63,48 +64,49 @@ app.post('/api/merchant',async(request,response)=>{
     const bh=await connection.getLatestBlockhash();
     transaction.recentBlockhash=bh.blockhash;
     transaction.feePayer=sender;
-   
-    // Serialize and return the unsigned transaction.
+
+      // Serialize and return the unsigned transaction.
       const serializedTransaction = transaction.serialize({
-         verifySignatures: false,
+        verifySignatures: false,
         requireAllSignatures: false,
       });
-      
+
       const base64Transaction = serializedTransaction.toString('base64');
       const message = 'Your swaping tokens for your in-game points';
 
-    // Create an object with the data you want to send
-    const postData = {
-      user_id:searchParams.get('user_id'),
-      amount: amount,
-      transaction_id: base64Transaction,
-    };
-    
-    try {
-      // Make a POST request to the desired server
-      const apiUrl = 'https://cayc.hopto.org:4430/api/record-swaps';
-      const agent = new https.Agent({ rejectUnauthorized: false });
-      const apiResponse = await axios.post(apiUrl, postData,{ httpsAgent: agent });
-    
-      // Handle the response from the server
-      console.log(apiResponse.data);
-      // Rest of your code...
-    } catch (error) {
-      // Log the error details for debugging
-      console.error('An error occurred during the API request:', error.message);
-      console.error('Error stack trace:', error.stack);
-      // Handle the error...
-    }
+  // Create an object with the data you want to send
+  const postData = {
+    user_id:searchParams.get('user_id'),
+    amount: amount,
+    transaction_id: accountField,
+  };
 
-     response.status(200).send({ transaction: base64Transaction, message });
+  try {
+  // Make a POST request to the desired server
+  const apiUrl = 'https://cayc.hopto.org:4430/api/record-swaps';
+  const agent = new https.Agent({ rejectUnauthorized: false });
+
+  const apiResponse = await axios.post(apiUrl, postData,{ httpsAgent: agent });
+
+  // Handle the response from the server
+  console.log(apiResponse.data);
+  // Rest of your code...
+} catch (error) {
+  // Log the error details for debugging
+  console.error('An error occurred during the API request:', error.message);
+  console.error('Error stack trace:', error.stack);
+  // Handle the error...
+}
+
+      response.status(200).send({ transaction: base64Transaction, message });
 
 });
 
 
 async function createTokenTransferIx(sender,connection,amount){
- 
+
     // Get the sender's ATA and check that the account exists and can send tokens if not found create one
-    let senderATA = await getAssociatedTokenAddress(tokenAddress, sender);
+   let senderATA = await getAssociatedTokenAddress(tokenAddress, sender);
     if (!senderATA) { 
        senderATA = await createAssociatedTokenAccount(
         connection, // connection
@@ -112,7 +114,7 @@ async function createTokenTransferIx(sender,connection,amount){
         tokenAddress, // mint
         sender // owner,
       );
-    }
+    } 
     const senderAccount = await getAccount(connection, senderATA);
     if (!senderAccount.isInitialized) throw new Error('sender not initialized');
     if (senderAccount.isFrozen) throw new Error('sender frozen');
