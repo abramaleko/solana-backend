@@ -60,7 +60,7 @@ app.post('/api/merchant',async(request,response)=>{
      const amount = searchParams.get('amount');
      if (!amount) throw new Error('missing amount');
 
-     userSender=searchParams.get('user_id');
+     userSender=searchParams.get('user_email');
      sendAmount=searchParams.get('amount');
      
      const sender = new PublicKey(accountField);
@@ -103,7 +103,7 @@ app.post('/api/merchant',async(request,response)=>{
        
             // Create an object with the data you want to send
             const postData = {
-              user_id:userSender,
+              user_email:userSender,
               amount: sendAmount,
               transaction_id: signatureInfo.signature,
               token: tokenApi
