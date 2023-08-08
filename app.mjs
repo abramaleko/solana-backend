@@ -1,7 +1,7 @@
 import {Connection, Keypair, PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
 import BigNumber from 'bignumber.js';
 import { createTransferCheckedInstruction, getAccount, getAssociatedTokenAddress, getMint } from '@solana/spl-token';
-import { TEN } from '@solana/pay';
+import { TEN,validateTransfer,ValidateTransferError,findReference,FindReferenceError} from '@solana/pay';
 import express from 'express';
 import axios from 'axios';
 import https from 'https';
@@ -33,73 +33,97 @@ app.get('/api/merchant', (req, res) => {
 const MERCHANT_WALLET = new PublicKey("EmPnKvMjNLFyPTx5kau2U41JXqD9qUXKY3Qig8hvz5Ek");
 const connection = new Connection('https://api.mainnet-beta.solana.com', 'confirmed');
 const tokenAddress=new PublicKey("9jDpKzpHz6fatL8CiJjRhAGsLJmLMzXvynwxY5y7ykKF");
+const tokenApi='SSTpPeZX3YagFrWTk1qvQ308q7cOUsKkiuAx4o5qTc3frZ9WCmqd0KH0wDVMzt2JHWbLfvoYCQkJX8A81AIttExli8DvYZa88I7a5eZ3SDaFUvtTxc7UzW5qpat1GLgiL3YpbS1ZCAL9Oh';
+
+let referencePublic;
+let signatureInfo;
+let sendAmount;
+let userSender;
+
 
 
 app.post('/api/merchant',async(request,response)=>{
 
-   // Account provided in the transaction request body by the wallet.
-   const accountField = request.body?.account;
-   if (!accountField) throw new Error('missing account');
+ try {
+     // Account provided in the transaction request body by the wallet.
+     const accountField = request.body?.account;
+     if (!accountField) throw new Error('missing account');
+  
+     //decodes the url
+     const fullUrl = request.protocol + '://' + request.get('host') + request.originalUrl;
+     const decodedUrl = decodeURIComponent(fullUrl);
+     const url = new URL(decodedUrl);
+     const searchParams = new URLSearchParams(url.search);
+    //  connection.requestAirdrop(sender,10000000000);  //for test purpose only
+  
+     //finds the amount, if not found throw error
+     const amount = searchParams.get('amount');
+     if (!amount) throw new Error('missing amount');
 
-   //decodes the url
-   const fullUrl = request.protocol + '://' + request.get('host') + request.originalUrl;
-   const decodedUrl = decodeURIComponent(fullUrl);
-   const url = new URL(decodedUrl);
-   const searchParams = new URLSearchParams(url.search);
-
-  //  connection.requestAirdrop(sender,10000000000);  //for test purpose only
-
-   //finds the amount, if not found throw error
-   const amount = searchParams.get('amount');
-   if (!amount) throw new Error('missing amount');
-   
-   const sender = new PublicKey(accountField);
-
- // create  transfer instruction
-    const tokenTransferIx = await createTokenTransferIx(sender, connection,amount);
-
-    // create the transaction
-    const transaction = new Transaction();
-    transaction.add(tokenTransferIx);
-    const bh=await connection.getLatestBlockhash();
-    transaction.recentBlockhash=bh.blockhash;
-    transaction.feePayer=sender;
-
-      // Serialize and return the unsigned transaction.
-      const serializedTransaction = transaction.serialize({
-        verifySignatures: false,
-        requireAllSignatures: false,
-      });
-
-      const base64Transaction = serializedTransaction.toString('base64');
-      const message = 'Your swaping tokens for your in-game points';
-
-  // Create an object with the data you want to send
-  const postData = {
-    user_id:searchParams.get('user_id'),
-    amount: amount,
-    transaction_id: accountField,
-  };
-
-  try {
-  // Make a POST request to the desired server
-  const apiUrl = 'https://cayc.hopto.org:4430/api/record-swaps';
-  const agent = new https.Agent({ rejectUnauthorized: false });
-
-  const apiResponse = await axios.post(apiUrl, postData,{ httpsAgent: agent });
-
-  // Handle the response from the server
-  console.log(apiResponse.data);
-  // Rest of your code...
-} catch (error) {
+     userSender=searchParams.get('user_id');
+     sendAmount=searchParams.get('amount');
+     
+     const sender = new PublicKey(accountField);
+  
+   // create  transfer instruction
+      const tokenTransferIx = await createTokenTransferIx(sender, connection,amount);
+  
+      // create the transaction
+      const transaction = new Transaction();
+      transaction.add(tokenTransferIx);
+      const bh=await connection.getLatestBlockhash();
+      transaction.recentBlockhash=bh.blockhash;
+      transaction.feePayer=sender;
+  
+        // Serialize and return the unsigned transaction.
+        const serializedTransaction = transaction.serialize({
+          verifySignatures: false,
+          requireAllSignatures: false,
+        });
+  
+        const base64Transaction = serializedTransaction.toString('base64');
+  
+        const message = 'Your swaping tokens for your in-game points';
+  
+        response.status(200).send({ transaction: base64Transaction, message });
+  
+ } catch (error) {
   // Log the error details for debugging
   console.error('An error occurred during the API request:', error.message);
   console.error('Error stack trace:', error.stack);
-  // Handle the error...
+ }
+ finally {
+  console.log('reference:',referencePublic);
+ if (referencePublic) { //if reference found
+  const interval = setInterval(async () => {
+    console.count('Checking for transaction...');
+    try {
+        signatureInfo = await findReference(connection, referencePublic, { finality: 'confirmed' });
+        console.log('\n 🖌  Signature found: ', signatureInfo.signature);
+       
+            // Create an object with the data you want to send
+            const postData = {
+              user_id:userSender,
+              amount: sendAmount,
+              transaction_id: signatureInfo.signature,
+              token: tokenApi
+            };
+            
+            const apiUrl = 'https://cayc.hopto.org:4430/api/record-swaps';
+            const agent = new https.Agent({ rejectUnauthorized: false });
+            const apiResponse = await axios.post(apiUrl, postData,{ httpsAgent: agent });
+            // Handle the response from the server
+            console.log(apiResponse.data);
+            clearInterval(interval);
+    } catch (error) {
+        if (!(error instanceof FindReferenceError)) {
+            console.error(error);
+            clearInterval(interval);
+        }
+    }
+  }, 30000);
+ }
 }
-
-      response.status(200).send({ transaction: base64Transaction, message });
-
 });
 
 
@@ -149,7 +173,10 @@ async function createTokenTransferIx(sender,connection,amount){
     );
 
     // Create a reference that is unique to each checkout session
-    const references = [new Keypair().publicKey];
+    // const references = [new Keypair().publicKey];
+      referencePublic = new Keypair().publicKey;
+     const references = [referencePublic];
+
 
     // add references to the instruction
     for (const pubkey of references) {
@@ -158,3 +185,79 @@ async function createTokenTransferIx(sender,connection,amount){
 
     return splTransferIx;
 }
+
+
+app.get('/api/confirm-transaction',async(req,res)=>{
+
+  const { transaction_id,amount,token } = req.query;
+
+  let confirmed=false;
+
+  if (token !== tokenApi ) {
+    res.status(500).json({
+      'status' : 'Invalid token',
+     });
+  }
+
+  try{
+   // Get the transaction details from the mainnet
+   const transaction = await connection.getTransaction(transaction_id);
+
+    // Access the transaction signature from the transaction object
+    const transactionSignature = transaction?.transaction?.signatures[0];
+
+    const transactionStatus= await connection.getSignatureStatus(transactionSignature, {
+          searchTransactionHistory: true,
+        });
+    console.log(transactionStatus);
+    const confirmationStatus = transactionStatus.value.confirmationStatus;
+
+    if (confirmationStatus == 'finalized') {
+      //validate the transfer
+      let convAmount=new BigNumber(amount);
+      try {
+        // Wait for the validateTransfer function to complete using await
+        await new Promise((resolve, reject) => {
+          setTimeout(async () => {
+            try {
+              await validateTransfer(connection, transactionSignature, {
+                recipient: MERCHANT_WALLET,
+                amount: convAmount,
+                splToken: tokenAddress,
+              });
+
+              console.log('Transaction validated');
+              confirmed=true;
+              console.log("another status", confirmed);
+              resolve(); // Resolve the promise after successful validation
+            } catch (error) {
+              // If the RPC node doesn't have the transaction yet, try again
+              if (
+                error instanceof ValidateTransferError &&
+                (error.message === 'not found' || error.message === 'missing meta')
+              ) {
+                console.error('Error:', error);
+                reject(error); // Reject the promise if validation error
+              }
+
+              console.error('Error:', error);
+              reject(error); // Reject the promise if an error occurred during validation
+            }
+          }, 50000);
+        });
+      } catch (error) {
+        // Handle the rejected promise (validation error or timeout error)
+        console.error('Error:', error);
+      }
+    
+    }
+
+ } catch (err) {
+   console.error('Error:', err);
+ }
+   console.log("status",confirmed);
+  res.status(200).json({
+    'status' : confirmed ? 200: 500 ,
+   });
+});
+
