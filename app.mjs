@@ -61,7 +61,6 @@ app.post('/api/merchant',async(request,response)=>{
      if (!amount) throw new Error('missing amount');
 
      userSender=searchParams.get('user_email');
-     console.log(userSender);
      sendAmount=searchParams.get('amount');
      
      const sender = new PublicKey(accountField);
