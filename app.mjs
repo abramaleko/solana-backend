@@ -110,7 +110,7 @@ app.post('/api/merchant',async(request,response)=>{
             };
             
             // const apiUrl = 'https://cayc.hopto.org:4430/api/record-swaps';
-            const apiUrl = 'http://192.168.208.208/cayc-swap/api/record-swaps';
+            const apiUrl = 'http://192.168.100.194/api/record-swaps';
             const agent = new https.Agent({ rejectUnauthorized: false });
             const apiResponse = await axios.post(apiUrl, postData,{ httpsAgent: agent });
             // Handle the response from the server
